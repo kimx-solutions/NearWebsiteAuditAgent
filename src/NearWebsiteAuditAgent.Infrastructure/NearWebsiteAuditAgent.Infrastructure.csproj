@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\NearWebsiteAuditAgent.Core\NearWebsiteAuditAgent.Core.csproj" />
+    <ProjectReference Include="..\NearWebsiteAuditAgent.Contracts\NearWebsiteAuditAgent.Contracts.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+<ItemGroup><PackageReference Include="AngleSharp" Version="1.8.6" /><PackageReference Include="Microsoft.Extensions.Http" Version="10.0.14" /></ItemGroup></Project>
