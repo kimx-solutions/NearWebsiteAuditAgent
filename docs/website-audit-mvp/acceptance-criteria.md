@@ -1,0 +1,32 @@
+# Acceptance criteria
+
+本文件定義驗收，實際執行與缺口見 [驗證證據](evidence/implementation-verification.md)，進度只由 [implementation-plan](implementation-plan.md#progress) 維護。下表方法為驗收 contract，不等同每項已通過；AC16 真實市場與系統服務部署仍須分開驗證。決策狀態見 [requirement](requirement.md#待決事項)。
+
+## Observable criteria
+
+| ID / source | 前置／操作 | 可觀察結果／禁止副作用 | Contract / 方法 |
+| --- | --- | --- | --- |
+| AC01 / R01、R04 | Local mode，安全允許且全依賴可測的固定網站 fixture；送有效 URL | JSON／Markdown 同一 audit、固定 check ID 與完整結果；每個 finding 有 severity／safe evidence／可操作建議；Succeeded 可含問題，不等同零 findings | [report](api-contract.md#report)、[model](domain-spec.md#model)；orchestrator integration、兩格式語義比對 |
+| AC02 / R06 | 提供 ftp/file/gopher、userinfo、無效／歧義 URI、受限 port、loopback/private/metadata、IPv4 mapped／特殊表示地址 | 穩定 invalid_input／target_restricted；無對被拒 target 的 HTTP／TLS bytes，不會送平台 token | [boundary](data-flow.md#network-boundary)；URI／IP unit matrix + socket recorder integration；含允許的 public 控制組 |
+| AC03 / R06 | 可控 resolver 回公私混合、A/AAAA 私有、先公後私；或 connected endpoint 與核准 IP 不同 | fail closed；未經驗證 IP 無 HTTP bytes；每個連線／retry 都重驗；proxy／環境設定不能導入內網；憑證 AIA／CRL URL 也不造成旁路請求 | [boundary](data-flow.md#network-boundary)；production classifier + fake resolver/socket，實際 fixture server egress recorder，Windows／Linux 測試 |
+| AC04 / R02 | 有效、過期、未生效、hostname mismatch、自簽與缺 chain fixture；固定 clock；TLS1.2／1.3 成功／握手失敗 | 正確保留 validity／policy error／已協商版本；無版本為 NotTested；不 trust-all、不為 audit 開舊協定；HTML 依賴不在失敗 TLS 上繼續抓 | [checks](domain-spec.md#checks)；TLS checker unit + local SslStream server integration |
+| AC05 / R02 | 各 security header 缺／空／大小寫／有效／無效、report-only CSP、XFO／frame-ancestors 替代或衝突 | 依 rules-v1 產生正確 outcome／severity；不能以 report-only 當 enforcement；解析不明 NotTested；建議不聲稱 exploit 已被證實 | [checks](domain-spec.md#checks)；每個 header checker 參數化 unit fixtures |
+| AC06 / R02、R06 | HTTP→HTTPS、跨公開 origin、HTTPS downgrade、relative Location、loop、超 hop、redirect to private、無 Location | 記錄 bounded sanitized chain／final status；每跳重驗；降級／受限／超限停止；不發下一個違規請求；依賴頁面不可假通過 | [boundary](data-flow.md#network-boundary)、[checks](domain-spec.md#checks)；多 server redirect integration + request count recorder |
+| AC07 / R02、R06 | 多筆 Set-Cookie、Expires 逗點、重名不同 path、Secure／HttpOnly／SameSite 組合、無 cookie／無 response | 逐 header 解析不以逗點錯切；不以無 Expires 猜認證；None 無 Secure 判錯；無 cookie 可 N/A，但無 response 為 NotTested；所有輸出不含 cookie values | [checks](domain-spec.md#checks)、[secrets](data-flow.md#persistence-and-secrets)；cookie unit matrix、sentinel-secret log/report scan |
+| AC08 / R03 | HTML title／description／H1 缺空多個、relative／跨域／多個 canonical、noindex、破碎或非 HTML；robots／sitemap 成功、404、403、timeout、XML external entity | 各 SEO outcome 與 rules 一致；noindex 只 Info；失敗不算不存在；不跟 canonical、不抓子 sitemap、不解析外部 entity、不執行 JS | [checks](domain-spec.md#checks)、[scope](data-flow.md#probe-scope)；每個 checker unit fixtures + HTTP/HTML/XML integration |
+| AC09 / R03、R06 | 同頁重複／fragment／外域／非 HTTP links 超過 N；HEAD 405/501、404/410、403、429/5xx、外域 redirect | 固定選取、去重／有界；fallback 只規定情況；只判可證明壞鏈，保留未知；揭露 selected／excluded／inconclusive；不抓第二頁 HTML／外域 link | [scope](data-flow.md#probe-scope)、[checks](domain-spec.md#checks)；unit ordering + HTTP method／count／origin recorder |
+| AC10 / R04 | 相同 snapshot／clock／versions，多次執行含重複 cookie／多壞鏈及 severity 邊界 fixture | findings／score／grade／ordering 相同；同 check 只扣最高一項，clamp 0–100；A/B/C/D/F 邊界正確；兩格式一致 | [scoring](domain-spec.md#scoring)；pure unit／property-style cases，不依公開網站時間變動 |
+| AC11 / R04 | 一部分 checks timeout／unsupported，沒有任何觀測，或合法 N/A；含 failed+partial link check | outcome 不被改 Passed；Partial／Failed 分別正確；provisional 與 grade=null／score=null 依規則；counts 合計一致，unknown 不被 N/A 掩蓋 | [state](domain-spec.md#audit-state)、[scoring](domain-spec.md#scoring)；aggregation + JSON/Markdown contract tests |
+| AC12 / R01、R06 | chunked／壓縮大 body、slow response、巨大 header／HTML、超 requests／links／concurrency，設定不合法 | 每一共享預算有確定上限；超限停止、socket／permit 釋放；剩餘 checks NotTested；無無界 queue／parse；非法設定啟動失敗 | [budgets](data-flow.md#resource-budgets)；controlled server integration、fake clock、request/byte/concurrency counters |
+| AC13 / R01、R06 | DNS／TLS／body／parse 各階段取消、per-request timeout、整體 timeout；後續送另一筆有效任務 | 取消有效傳遞、有限時間停止、不再開新網路；保留安全 partial；單筆錯誤 Worker 仍可處理下一筆；取消時不啟動新的平台 submit | [flow](prototype-flow.md#alternate-and-recovery)；orchestrator／Worker integration with bounded elapsed-time tolerance |
+| AC14 / R05、R06 | 官方 poll schema、多頁、重複列、缺 required 欄位、unknown status、無效 brief、多 URL、401/403、429/5xx、近 SLA | 只處理已分配有效 revision、start 在 target 流量前；容量／deadline 有限；永久錯誤不 retry、transient bounded；缺契約／無效 brief NeedsReview 或暫停入口；不洩密 | [NEAR](api-contract.md#near-api)、[retry](api-contract.md#retry-and-delivery)；schema fixture + adapter/Worker integration；依 D01、D02 |
+| AC15 / R05、R06 | 重複 poll／雙 process；crash 於 start 後、report write 中、submit 前後；遠端已 commit 卻本地 timeout；disk full／corrupt journal | 每 revision 最多一個本地執行；atomic records；可恢復 start 後未完成工作；已提交不重送；不明結果保留 AwaitingReconciliation；失敗不退回 in-memory；不宣稱 server exactly-once | [assignment](domain-spec.md#assignment-state)、[repositories](domain-spec.md#repositories)；temp-directory persistence + fault injection + simulated remote commit；依 D04、D07 |
+| AC16 / R05 | 維運者核准的真實平台測試 agent／assignment／token，符合 D01 brief；正常、request-changes、新 SLA、未知 revision、取消／過期 | 真正 poll→start→audit→submit；平台讀回 submitted，安全 Markdown 可見；重新要求變更只依批准 revision policy；過期／取消不冒充交付；無憑證／授權不執行 | [NEAR](api-contract.md#near-api)、[flow](prototype-flow.md#market-success)；authorized manual end-to-end + sanitized IDs/times/status evidence；D05、D06 gate，mock 不可替代 |
+| AC17 / R01、R07、R08、R09 | .NET 10 Windows／Linux，還原、build、unit／integration，再以 Local mode 執行；檢查依賴與部署設定 | net10.0 Worker 可啟停；全部適用測試通過；無 AI／Playwright／PDF／外部 DB 依賴；Local 不需 token；環境變數覆蓋／設定驗證可用 | [scope](requirement.md#out-of-scope)、[operator](ui-spec.md#operator-surface)；未來 solution 的 restore/build/test、dependency inventory、兩 OS service smoke；CI／實機證據分列 |
+| AC18 / R07、R08 | 維運者依操作文件設定 token／root／limits、啟停／恢復，檢視 generated fixture reports 與 retention | 文件足以執行；token 不入 repo／CLI／log；reports 有 scope／版本；只有已對帳完成資料在期限後清理；未知提交與進行中資料保留；設定／目錄錯誤清楚可診斷 | [operator](ui-spec.md#operator-surface)、[storage](data-flow.md#persistence-and-secrets)；manual doc walkthrough + retention/ACL/path traversal tests；真實 NEAR 仍依 AC16 |
+
+## Evidence rules
+
+每份證據記錄日期、OS／SDK、commit 與受測工作樹 diff／等價版本、命令或人工步驟、對應 AC、實際結果與限制。不可把「已呼叫 skill」「文件完成」「mock 成功」寫成驗收完成。
+
+planned output：`docs/website-audit-mvp/evidence/`，僅於實際執行後建立並由計畫連結；只保存去識別 log／fixtures／必要平台狀態，禁止憑證、完整 brief、cookie values、敏感 URL。Local tests、CI、Windows／Linux smoke、外部平台與使用者驗收分開；有未驗項目即保留 pending／blocked。

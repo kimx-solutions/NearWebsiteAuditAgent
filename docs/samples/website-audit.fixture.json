@@ -1,0 +1,321 @@
+{
+  "schemaVersion": "1.0",
+  "auditId": "13ae520d-d983-47a0-a0e4-f1dd1e94a5f2",
+  "url": "https://audit.example.com/",
+  "finalUrl": "https://audit.example.com/",
+  "status": "succeeded",
+  "startedAt": "2026-10-26T14:15:29.6672121+00:00",
+  "completedAt": "2026-10-26T14:15:30.283127+00:00",
+  "durationMs": 615,
+  "score": 64,
+  "grade": "D",
+  "scoreProvisional": false,
+  "ruleVersion": "rules-v1",
+  "scoreVersion": "score-v1",
+  "checks": [
+    {
+      "id": "tls.https",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "tls.certificate",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "tls.protocol",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "headers.hsts",
+      "outcome": "failed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "headers.csp",
+      "outcome": "failed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "headers.framing",
+      "outcome": "failed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "headers.nosniff",
+      "outcome": "failed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "headers.referrer",
+      "outcome": "failed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "headers.permissions",
+      "outcome": "failed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "cookies.secure",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": [
+        {
+          "kind": "cookie",
+          "subject": "sid",
+          "detail": "Secure=True; HttpOnly=True; SameSite=Lax; lifetime=nonpersistent; purpose=unknown"
+        }
+      ]
+    },
+    {
+      "id": "cookies.httponly",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": [
+        {
+          "kind": "cookie",
+          "subject": "sid",
+          "detail": "Secure=True; HttpOnly=True; SameSite=Lax; lifetime=nonpersistent; purpose=unknown"
+        }
+      ]
+    },
+    {
+      "id": "cookies.samesite",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": [
+        {
+          "kind": "cookie",
+          "subject": "sid",
+          "detail": "Secure=True; HttpOnly=True; SameSite=Lax; lifetime=nonpersistent; purpose=unknown"
+        }
+      ]
+    },
+    {
+      "id": "redirects.upgrade",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "redirects.chain",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "seo.title",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "seo.description",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "seo.h1",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "seo.canonical",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "seo.robots_meta",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "seo.robots_txt",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "seo.sitemap",
+      "outcome": "passed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    },
+    {
+      "id": "seo.links",
+      "outcome": "failed",
+      "completeness": "complete",
+      "reasonCode": null,
+      "evidence": []
+    }
+  ],
+  "findings": [
+    {
+      "id": "missing_csp",
+      "checkId": "headers.csp",
+      "category": "security",
+      "severity": "medium",
+      "description": "An enforced CSP header is missing.",
+      "evidence": [
+        {
+          "kind": "observation",
+          "subject": "target",
+          "detail": "An enforced CSP header is missing."
+        }
+      ],
+      "recommendation": "Define an enforced Content-Security-Policy appropriate for the application."
+    },
+    {
+      "id": "missing_framing_policy",
+      "checkId": "headers.framing",
+      "category": "security",
+      "severity": "medium",
+      "description": "No supported restrictive framing policy was observed.",
+      "evidence": [
+        {
+          "kind": "observation",
+          "subject": "target",
+          "detail": "No supported restrictive framing policy was observed."
+        }
+      ],
+      "recommendation": "Use CSP frame-ancestors or a supported X-Frame-Options policy."
+    },
+    {
+      "id": "missing_hsts",
+      "checkId": "headers.hsts",
+      "category": "security",
+      "severity": "medium",
+      "description": "A positive valid HSTS max-age is missing.",
+      "evidence": [
+        {
+          "kind": "observation",
+          "subject": "target",
+          "detail": "A positive valid HSTS max-age is missing."
+        }
+      ],
+      "recommendation": "Configure a positive Strict-Transport-Security max-age after validating HTTPS deployment."
+    },
+    {
+      "id": "missing_nosniff",
+      "checkId": "headers.nosniff",
+      "category": "security",
+      "severity": "low",
+      "description": "A valid nosniff header is missing.",
+      "evidence": [
+        {
+          "kind": "observation",
+          "subject": "target",
+          "detail": "A valid nosniff header is missing."
+        }
+      ],
+      "recommendation": "Set X-Content-Type-Options: nosniff."
+    },
+    {
+      "id": "missing_permissions_policy",
+      "checkId": "headers.permissions",
+      "category": "security",
+      "severity": "low",
+      "description": "Permissions-Policy is missing.",
+      "evidence": [
+        {
+          "kind": "observation",
+          "subject": "target",
+          "detail": "Permissions-Policy is missing."
+        }
+      ],
+      "recommendation": "Restrict browser features that this application does not need."
+    },
+    {
+      "id": "unsafe_referrer_policy",
+      "checkId": "headers.referrer",
+      "category": "security",
+      "severity": "low",
+      "description": "A supported conservative Referrer-Policy is missing.",
+      "evidence": [
+        {
+          "kind": "observation",
+          "subject": "target",
+          "detail": "A supported conservative Referrer-Policy is missing."
+        }
+      ],
+      "recommendation": "Choose a policy such as strict-origin-when-cross-origin appropriate for the application."
+    },
+    {
+      "id": "broken_link",
+      "checkId": "seo.links",
+      "category": "seo",
+      "severity": "low",
+      "description": "A selected link returned HTTP 404.",
+      "evidence": [
+        {
+          "kind": "observation",
+          "subject": "https://audit.example.com/ [resource 5d70bb3fbc6b]",
+          "detail": "A selected link returned HTTP 404."
+        }
+      ],
+      "recommendation": "Correct or remove the broken link."
+    }
+  ],
+  "coverage": {
+    "planned": 22,
+    "passed": 15,
+    "failed": 7,
+    "notTested": 0,
+    "notApplicable": 0,
+    "tested": 22
+  },
+  "scope": {
+    "htmlPagesParsed": 1,
+    "targetAttempts": 8,
+    "decodedBodyBytes": 374,
+    "linksEligible": 2,
+    "linksSelected": 2,
+    "linksAttempted": 2,
+    "linksInconclusive": 0,
+    "linksExcluded": 2,
+    "limitsReached": [],
+    "limitations": [
+      "Only the submitted page is parsed; linked pages are not crawled.",
+      "JavaScript is not executed. Online certificate revocation is not checked.",
+      "Unknown cookie authentication purpose is not assumed safe."
+    ]
+  },
+  "errors": []
+}

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NearWebsiteAuditAgent.Core\NearWebsiteAuditAgent.Core.csproj" />
+    <ProjectReference Include="..\NearWebsiteAuditAgent.Infrastructure\NearWebsiteAuditAgent.Infrastructure.csproj" />
+    <ProjectReference Include="..\NearWebsiteAuditAgent.Contracts\NearWebsiteAuditAgent.Contracts.csproj" />
+  </ItemGroup>
+</Project>

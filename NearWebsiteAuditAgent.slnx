@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NearWebsiteAuditAgent.Contracts/NearWebsiteAuditAgent.Contracts.csproj" />
+    <Project Path="src/NearWebsiteAuditAgent.Core/NearWebsiteAuditAgent.Core.csproj" />
+    <Project Path="src/NearWebsiteAuditAgent.Infrastructure/NearWebsiteAuditAgent.Infrastructure.csproj" />
+    <Project Path="src/NearWebsiteAuditAgent.Worker/NearWebsiteAuditAgent.Worker.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NearWebsiteAuditAgent.Tests/NearWebsiteAuditAgent.Tests.csproj" />
+  </Folder>
+</Solution>
