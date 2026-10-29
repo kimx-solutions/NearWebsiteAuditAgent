@@ -1,6 +1,26 @@
 # NearWebsiteAuditAgent
 
-.NET 10 確定性網站安全與基本 SEO audit Worker。輸入一個公開 HTTP(S) URL，輸出 JSON／Markdown；可處理 NEAR Agent Market 已分配任務。沒有 AI、瀏覽器自動化、前端或資料庫依賴。
+.NET 10 確定性網站安全與基本 SEO 稽核服務。其他 Agent 可直接呼叫 HTTP API 取得 JSON；另保留 Local／NEAR Market Worker，輸出 JSON／Markdown 或處理市場任務。沒有 AI、瀏覽器自動化、前端或資料庫依賴。
+
+## 讓其他 Agent 呼叫 API
+
+API 是獨立 process，不輪詢 NEAR、不需要市場 token 或 Storage:Root。以安全方式注入專屬 API key（32–256 字元，限英數字與 -._~+/，可在尾端加 =），啟動：
+
+~~~powershell
+$keyValue = Read-Host "API key" -AsSecureString
+$env:AuditApi__ApiKey = [System.Net.NetworkCredential]::new("", $keyValue).Password
+dotnet run --project src/NearWebsiteAuditAgent.Api
+~~~
+
+預設監聽 http://127.0.0.1:5080。在另一個已安全注入相同 key 的呼叫端環境執行：
+
+~~~powershell
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:5080/audit `
+  -Headers @{ Authorization = "Bearer $env:AuditApi__ApiKey" } `
+  -ContentType "application/json" -Body '{"url":"https://example.com/"}'
+~~~
+
+同步回傳 AuditResult JSON；預設最多一筆同時稽核、每分鐘 60 個已認證請求，超額立即 429。外部 Agent 使用部署後的 HTTPS 網址；本機 HTTP 用於本機呼叫或本機 HTTPS reverse proxy。API 不存報告檔案，也不提供 webhook 或 MCP。[API 契約與 HTTP 狀態](docs/website-audit-mvp/api-contract.md#direct-audit-api) · [部署操作](docs/operations.md#direct-api)
 
 ## 本地執行
 
@@ -39,6 +59,7 @@ dotnet run --project src/NearWebsiteAuditAgent.Worker -- --Execution:Mode Local 
 - Core：checks、score、orchestrator、network policy、ports。
 - Infrastructure：HTTP/TLS、AngleSharp、reports、atomic files、NEAR adapter。
 - Worker：設定、console／Windows Service lifetime、Local／Market execution。
+- Api：ASP.NET Core Minimal API、Bearer API key、HTTP 邊界與並行／流量限制；重用 Core 稽核流程。
 - Tests：xUnit、受控 HTTP/TLS、OpenSSL AIA egress、journal／restart／contract cases。
 
 ~~~powershell

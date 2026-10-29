@@ -25,6 +25,13 @@
 | AC17 / R01、R07、R08、R09 | .NET 10 Windows／Linux，還原、build、unit／integration，再以 Local mode 執行；檢查依賴與部署設定 | net10.0 Worker 可啟停；全部適用測試通過；無 AI／Playwright／PDF／外部 DB 依賴；Local 不需 token；環境變數覆蓋／設定驗證可用 | [scope](requirement.md#out-of-scope)、[operator](ui-spec.md#operator-surface)；未來 solution 的 restore/build/test、dependency inventory、兩 OS service smoke；CI／實機證據分列 |
 | AC18 / R07、R08 | 維運者依操作文件設定 token／root／limits、啟停／恢復，檢視 generated fixture reports 與 retention | 文件足以執行；token 不入 repo／CLI／log；reports 有 scope／版本；只有已對帳完成資料在期限後清理；未知提交與進行中資料保留；設定／目錄錯誤清楚可診斷 | [operator](ui-spec.md#operator-surface)、[storage](data-flow.md#persistence-and-secrets)；manual doc walkthrough + retention/ACL/path traversal tests；真實 NEAR 仍依 AC16 |
 
+## Direct API acceptance — 2026-10-29
+
+- AC19：有效 Bearer key＋單 url JSON，經 HTTP pipeline 與真實 orchestrator 回傳既有 AuditResult、22 checks／safe evidence；不需要 NEAR token 或 Storage:Root。
+- AC20：未授權／多值 key、CLI／settings secret、外部 HTTP、非 JSON／UTF-8、duplicate／unknown keys、已知與未知長度超大 body，皆在 target 流量前安全拒絕；錯誤與 log 無 secret／URL echo。
+- AC21：許可之外的第二筆併發立即 429、fixed-window rate cap 有效；呼叫取消與 host stopping 後釋放 permit，後續工作可執行；沒有無界 queue。
+- AC22：受限 URL 422；target Failed／timeout／partial 依 API contract；意外例外 500 安全 ProblemDetails、回傳 body size 上限；所有回應 no-store；Windows／Linux HTTP integration 與真實 Kestrel smoke、既有 Worker regression 及文件各自留證。
+
 ## Evidence rules
 
 每份證據記錄日期、OS／SDK、commit 與受測工作樹 diff／等價版本、命令或人工步驟、對應 AC、實際結果與限制。不可把「已呼叫 skill」「文件完成」「mock 成功」寫成驗收完成。

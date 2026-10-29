@@ -1,5 +1,7 @@
 # 資料流程與安全邊界
 
+直接 API（2026-10-29）：獨立 host 只依賴 Contracts／Core／Infrastructure，API key 在入口驗證，不傳入 target transport。以 framework fixed-window limiter＋concurrency limiter 控制所有已認證呼叫，queue=0；body 有 8192-byte／10 秒限制，再呼叫既有 orchestrator。結果只於記憶體形成有界 JSON，不碰市場／journal／report store。錯誤與 request log 不回顯 body、query、Authorization 或例外內容。完整契約見 [直接 API](api-contract.md#direct-audit-api)。
+
 本文件擁有 transport、資料流與資源預算。需求來源為 R01、R05、R06、R08；D02／D04 保守提案已隨開工採用，具體防護與操作上限見下方及 operations。DTO 見 [API](api-contract.md#local-contract)，檢查與狀態見 [domain](domain-spec.md)。
 
 ## Entry to output

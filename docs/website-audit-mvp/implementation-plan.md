@@ -8,7 +8,7 @@ module_spec_package: docs/website-audit-mvp
 req_anchor: https://github.com/kimx-solutions/NearWebsiteAuditAgent/issues/1
 eng_anchor: docs/website-audit-mvp/implementation-plan.md
 work_state: awaiting_external_validation
-last_completed_step: P9
+last_completed_step: A4
 next_step: P10
 ---
 
@@ -106,6 +106,37 @@ next_step: P10
   - owner: 維運者／需求 owner 提供 D05 受管憑證、已授權 test assignment 與費用／mutation 範圍；實作者其後執行並留證。
   - references: AC16–AC18、[D05](requirement.md#待決事項)、[操作](../operations.md)、[證據](evidence/implementation-verification.md)
   - exit_criteria: 真實 NEAR poll→start→audit→submit→讀回結果與需用 failure／revision cases、目標部署 service account／啟停驗證、遠端 CI 與使用者驗收各自有證據；未滿足前整體 plan 維持 in_progress。
+## Direct API increment — 2026-10-29
+
+使用者於「其他 Agent 呼叫 POST /audit」說明後指示「實作」；保留既有 Worker 與 P10，新增以下已授權範圍。以原生 inline 方式完成，不另開實作計畫。短設計由 API／data／domain 與 AC19–22 擁有；新 scope 不替代真實 NEAR 待驗項。
+
+- [x] A0 範圍／契約與開工確認
+  - status: done
+  - skill: vertical-slice-implementer
+  - result: 現有 isolated worktree clean，fast-forward 到已 merge 的 main 6a76daa，tree 與 3ec7b92 相同；無 AGENTS 內容或額外 repo gate。採獨立 Minimal API、同步有界 JSON、環境 key，未採 webhook／queue；使用者已要求實作，不重問相同範圍。
+- [x] A1 API host、認證、輸入／並行邊界及 tests
+  - status: done
+  - skill: backend-feature-development、aspnet-core、test-driven-development
+  - references: api-contract.md#direct-audit-api、AC19–22
+  - exit_criteria: 新 Api project 與既有 tests project reference／鎖定的 Mvc.Testing 10.0.14，測試先 RED，再完成真實 HTTP request pipeline／orchestrator；抽出 ValidateAudit，Core 無 ASP.NET 依賴。
+- [x] A2 可讀性／操作文件
+  - status: done
+  - result: Host／auth／HTTP boundary／endpoint 分檔，組裝保持集中；已檢查方法責任，無需額外重構。README／operations 已補安全 key、PowerShell／curl stdin、HTTPS、quota 與同步 timeout。
+  - skill: refactor-backend-methods
+  - exit_criteria: endpoint、auth、body reader、host 組裝責任分離；README／operations 包含啟動、key、curl、HTTPS、rate／status／同步 deadline，無實際憑證。
+- [x] A3 驗證與證據
+  - status: done
+  - result: Windows Release／Linux Debug 各 200 tests 通過，真實 Kestrel、HTTP→受控 TLS、publish／build／format／dependency 查核完成；見 evidence/direct-api-verification.md。
+  - skill: project-test-completion
+  - exit_criteria: AC19–22 HTTP integration、現有 Worker regression、兩 OS、format／locked restore／build 與 Kestrel smoke 留證，未部署另列。
+- [x] A4 契約符合性與程式碼審查
+  - status: done
+  - result: 本地／受控範圍 compliant；獨立 review 的 key 語法 P2 已 RED→GREEN 修正並同步契約，二次覆核無剩餘 findings。最終 Windows／Linux 各 200 tests 通過，source/config manifest 有效；真實部署／外部 Agent 驗收與 P10 保留。
+  - skill: spec-compliance-reviewer、senior-code-reviewer
+  - exit_criteria: 文件／DTO／HTTP／AC 一致，必要問題已解，受影響證據有效；未自動 commit／push／開新 PR。
+
+本增量仍無 UI：design-time／implemented-ui UX 與 frontend 不適用。唯一持續進度由本計畫維護。
+
 ## Not applicable
 
 | Stage | Skill／mode | 狀態與原因 |

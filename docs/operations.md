@@ -1,5 +1,29 @@
 # 操作與部署
 
+## Direct API
+
+其他 Agent 直接呼叫 `POST /audit`，不經 NEAR 市場。獨立啟動 `dotnet run --project src/NearWebsiteAuditAgent.Api`；只需 process environment 的 `AuditApi__ApiKey`（32–256 字元，限英數字與 -._~+/，可在尾端加 =），建議以密碼管理器產生至少 32 bytes 隨機 key。禁止 CLI 或 settings file 放 key；settings file 的同名值不採用。保管好呼叫端 key，輪替後重啟 API；沒有任務 token／使用者帳號或多租戶權限模型。
+
+Windows 呼叫範例與安全輸入方式見根 README。Linux 呼叫端可由安全環境注入 key，透過 curl config stdin 避免把 key 展開到 process arguments：
+
+~~~sh
+curl --config - <<EOF
+url = "http://127.0.0.1:5080/audit"
+request = "POST"
+header = "Authorization: Bearer ${AuditApi__ApiKey}"
+header = "Content-Type: application/json"
+data = "{\"url\":\"https://example.com/\"}"
+EOF
+~~~
+
+回傳 JSON 即 audit 結果，不保存 JSON／Markdown 或建立 queue。請求 body 只含一個 url、上限 8192 UTF-8 bytes／10 秒；不支援壓縮 body。outbound 仍執行既有 SSRF／TLS／redirect／size guards。200 可能是 Partial，須讀 coverage／errors，不把它當網站無問題。完整狀態與 error code 見 [直接 API](website-audit-mvp/api-contract.md#direct-audit-api)。
+
+`AuditApi__RequestsPerMinute` 預設 60，範圍 1–600；`Audit__MaxConcurrentAudits` 預設 1，範圍 1–8，queue=0。所有已認證呼叫共用每 process 的額度，非每 IP 或跨副本統計；429 帶 Retry-After。其餘 Audit 設定沿用。呼叫端／proxy timeout 至少涵蓋 Audit:MaxDurationSeconds＋30 秒（預設建議 90 秒）；斷線或 SIGTERM 取消稽核。重送是新的唯讀掃描，不提供持久化 exactly-once。
+
+預設只監聽 http://127.0.0.1:5080。對外服務須使用公開 HTTPS：可在同主機 reverse proxy 終止 TLS，再連 loopback HTTP；將 body size、header size、連線與 timeout 限制同步到 proxy，保留 Authorization，但不要記錄 body／query／Authorization。不要將 loopback proxy port 開給外部。程式不信任任意 X-Forwarded-*；直接非 loopback 明文連線會收到 426。若直接由 Kestrel 終止 TLS，使用受管憑證與 ASP.NET Core HTTPS endpoint 設定；不將 private key 入 repo。未新增 CORS 或瀏覽器登入。
+
+發布：`dotnet publish src/NearWebsiteAuditAgent.Api -c Release --self-contained false -o publish/api`。使用 ASP.NET Core Runtime 10.0.14 或更新同 minor patch，Windows／Linux 服務管理可沿用下方 Worker 範例的帳號與停止原則，但 ExecStart 換為 Api binary、不帶 Execution／Storage／Market 參數。實際網域、TLS／reverse proxy、服務帳號部署與外部 Agent 連線需由維運者驗收。
+
 ## 環境與 Local
 
 SDK 10.0.403、最低 runtime 10.0.14（允許更新 patch），來源為 [Microsoft .NET 10 release metadata](https://builds.dotnet.microsoft.com/dotnet/release-metadata/10.0/releases.json)，查核日 2026-10-26。本地 .tools 的兩 OS SDK 已驗證 SHA512，不修改系統安裝；其他環境需自行安裝 pinned SDK。部署已發布程式只需對應 runtime。

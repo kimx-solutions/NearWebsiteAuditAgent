@@ -1,0 +1,2 @@
+# Keep checkout line endings consistent with .editorconfig on every platform.
+* text=auto eol=lf

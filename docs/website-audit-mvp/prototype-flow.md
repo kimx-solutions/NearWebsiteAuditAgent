@@ -4,6 +4,8 @@
 
 ## Local success
 
+直接 API 流程：Agent → `POST /audit` → HTTPS／API key 認證 → 有界 rate/concurrency admission → 嚴格 body parser → AuditOrchestrator／safe transport → 同步 AuditResult JSON。斷線與 host stopping 傳遞取消，例外只回安全 code。[直接 API](api-contract.md#direct-audit-api) 擁有 status 與重試語義；不輪詢市場、不存檔、不送市場 submit。
+
 1. 維運者以 local mode 提供一筆 AuditRequest，載入設定並做啟動驗證；不載入或要求 NEAR token。
 2. 驗證 URL 語法與網路政策，再建立有限預算與取消 deadline。
 3. 安全 transport 取得主頁，手動處理 redirect；建立 HTTP／TLS 觀測 snapshot。

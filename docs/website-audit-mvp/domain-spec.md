@@ -1,5 +1,7 @@
 # Domain specification
 
+2026-10-29 直接 API 沿用 IAuditRunner、AuditInput、AuditResult、AuditOptions 及 safe transport，不新增 domain entity、儲存模型或市場狀態。抽出共用 ValidateAudit 供 Worker／API 使用；認證、HTTP status、rate limiting 屬 API host 邊界，見 [契約](api-contract.md#direct-audit-api)。
+
 所有具體狀態、check 規則與 scoring 在此擁有；來源為 R01–R07。D03／D04／D06／D07 的保守提案已隨開工採用；實作澄清見文末。序列化名稱與欄位唯一來源為 [API](api-contract.md#local-contract)。
 
 ## Model
