@@ -1,6 +1,30 @@
 # API 與資料契約
 
-本包沒有 inbound REST server，因此不新增 `/audit` endpoint、HTTP envelope 或本地 Swagger。以下 DTO 是 local／Core 邊界提案；NEAR 部分是外部既有 REST，兩者的 error／status 不能混用。
+2026-10-29 使用者於直接 API 模式說明後指示「實作」，新增獨立 ASP.NET Core API host。Local／Market Worker 保留；NEAR 外部 REST 的 error／status 不與本地 API 混用。
+
+## Direct audit API
+
+`POST /audit`：其他 Agent 直接傳入 `Content-Type: application/json`、`Authorization: Bearer <API key>`，body 為既有單欄位 `{"url":"https://example.com/"}`。同步執行並回傳既有 AuditResult JSON（camelCase、字串 enum），不建立背景 job、下載入口、queue 或 NEAR assignment；API 不保存結果檔案，也不需要 Storage:Root 或市場 token。
+
+key 僅由 `AuditApi__ApiKey` process environment 提供，32–256 字元，限英數字與 -._~+/，可在尾端加 =，禁止 CLI／settings file；無有效 key 啟動失敗。只接受單一 Authorization Bearer header，不從 query／cookie 取 key。認證先於 body／target 處理，固定時間比對雜湊。所有回應 Cache-Control: no-store；預設 loopback HTTP:5080 供本機／本機 HTTPS reverse proxy，非 loopback 的明文 HTTP 拒絕 426。不信任任意 forwarded headers。
+
+| HTTP | Body / 語義 |
+| --- | --- |
+| 200 | AuditResult，Succeeded 或 Partial；不代表網站無 findings |
+| 400 | ProblemDetails：invalid_input，非合法 UTF-8／JSON 或不符合單 url 欄位 |
+| 401 | ProblemDetails：unauthorized，WWW-Authenticate: Bearer；不讀 target、不 echo key |
+| 408 | ProblemDetails：request_body_timeout，body 讀取超過 10 秒 |
+| 413 | ProblemDetails：input_too_large，含未知長度串流最多 8192 bytes |
+| 415 | ProblemDetails：unsupported_media_type，非 application/json、非 UTF-8 charset 或壓縮 request |
+| 422 | AuditResult，Rejected，包含無效／受限 URL 與 DNS 安全拒絕 |
+| 426 | ProblemDetails：https_required，外部明文 HTTP |
+| 429 | ProblemDetails：rate_limited＋Retry-After；每 process 並行採 Audit:MaxConcurrentAudits（預設 1）、queue=0；AuditApi:RequestsPerMinute 預設 60，範圍 1–600 |
+| 502 | AuditResult，Failed，target 無可觀測結果 |
+| 504 | AuditResult，Failed 且 audit_timeout；有 partial observation 時仍為 200／Partial |
+| 503 | ProblemDetails：report_too_large，JSON 超過 Audit:MaxReportBytes |
+| 500 | ProblemDetails：internal_error，無例外文字／stack／輸入內容 |
+
+ProblemDetails 只含標準 type/title/status 及安全 code，不帶原始 URL／API key／cookie。呼叫端斷線或 host 停止時取消目標請求並釋放 permit，不保證仍可送出 HTTP 回應；重新呼叫視為新的唯讀 audit。無 CORS、cookie authentication、webhook、MCP server 或 Swagger UI。
 
 ## Local contract
 

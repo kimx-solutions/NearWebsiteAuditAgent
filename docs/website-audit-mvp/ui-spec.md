@@ -2,11 +2,13 @@
 
 ## Applicability
 
-`not-applicable`：S1 Out of Scope 明確排除 dashboard／frontend UI；本 slice 是背景 Worker。無畫面、欄位表單、瀏覽器 navigation、權限按鈕、responsive breakpoint、視覺 prototype 或 Markdown wireframe 需要實作。`senior-ux-reviewer` 的 `design-time` 與 `implemented-ui`、`frontend-feature-development` 均不適用，理由同步於 [計畫](implementation-plan.md#not-applicable)。
+`not-applicable`：S1 Out of Scope 明確排除 dashboard／frontend UI；本 slice 為無畫面的 Worker／直接 API。無畫面、欄位表單、瀏覽器 navigation、權限按鈕、responsive breakpoint、視覺 prototype 或 Markdown wireframe 需要實作。`senior-ux-reviewer` 的 `design-time` 與 `implemented-ui`、`frontend-feature-development` 均不適用，理由同步於 [計畫](implementation-plan.md#not-applicable)。
 
 這不免除輸入驗證、狀態可觀察性、報告可讀性與 server-side ownership。若新增 CLI 互動選單、webhook 管理頁或 dashboard，須先修訂 scope／UI／AC，不可沿用本判定跳過 UX。
 
 ## Operator surface
+
+2026-10-29 新增直接 HTTP API 操作面，無視覺 UI，兩種 UX 與 frontend 仍不適用。獨立 API process 不使用 Execution:Mode；以 API key 認證 POST /audit 並同步取得 JSON，見 [契約](api-contract.md#direct-audit-api)。
 
 以下為 P02／D04 已落地的操作面，實際命令見 operations：
 

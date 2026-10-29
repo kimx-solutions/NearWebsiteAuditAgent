@@ -57,7 +57,7 @@ AI／LLM／OpenAI／Claude／付費 AI 服務、Playwright、Lighthouse／PageSp
 
 P01：單一 owning slice 覆蓋 S1，實作計畫依安全邊界 → 本地 audit → 報告 → NEAR adapter 分段，避免安全防護最後才補上。
 
-P02：使用輪詢 REST 的 Worker，不設對外 HTTP API／webhook。保留單次本地執行供維運與離線驗證；public HTTP server 與前端不在本包。
+P02（2026-10-29 修訂）：Local／Market Worker 保留。使用者在「其他 Agent 直接呼叫 POST /audit」說明後指示「實作」，授權新增獨立直接 HTTP API host；此要求取代原先不設對外 API 的限制。仍不實作 NEAR webhook、前端或任務 queue。金鑰、同步回傳、資源限制與部署細節為本次工程選擇，見 [直接 API](api-contract.md#direct-audit-api)。
 
 P03：單一 Worker instance，使用持久化本地檔案追蹤任務與待提交報告；記憶體去重不足以覆蓋重啟。不宣稱跨主機 exactly-once。
 
@@ -86,3 +86,5 @@ S3 無實作，沒有可比對的已建行為或已通過測試；不能把 S1 c
 ## 確認 gate
 
 2026-10-26 使用者「開始實作」已解除本包開工 gate，證據見 [計畫 P0](implementation-plan.md#progress)。D05 真實市場測試仍未解除；開工不代表驗證、驗收、接單或發布完成。
+
+2026-10-29 增量來源 S6／需求 R10：本對話於直接 API 方案說明後的「實作」。其他 Agent 可主動呼叫 POST /audit 並取得 JSON；對應 AC19–AC22，既有 R01–R09 與 D05 仍保留。此為使用者新增要求，未自動寫回遠端 Issue 或更改市場驗收範圍。

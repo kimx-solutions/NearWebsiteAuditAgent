@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "AngleSharp": {
+        "type": "Transitive",
+        "resolved": "1.8.6",
+        "contentHash": "tdvrWSsHz8iRcb8U2cbFtYF6/1Mvhbe5ZxN/VdhVeIfp5vOvbwz3Bn7OZknnm2QSyGvM9ZaZLNLvfanPzNa61Q=="
+      },
+      "nearwebsiteauditagent.contracts": {
+        "type": "Project"
+      },
+      "nearwebsiteauditagent.core": {
+        "type": "Project",
+        "dependencies": {
+          "NearWebsiteAuditAgent.Contracts": "[1.0.0, )"
+        }
+      },
+      "nearwebsiteauditagent.infrastructure": {
+        "type": "Project",
+        "dependencies": {
+          "AngleSharp": "[1.8.6, )",
+          "NearWebsiteAuditAgent.Contracts": "[1.0.0, )",
+          "NearWebsiteAuditAgent.Core": "[1.0.0, )"
+        }
+      }
+    }
+  }
+}

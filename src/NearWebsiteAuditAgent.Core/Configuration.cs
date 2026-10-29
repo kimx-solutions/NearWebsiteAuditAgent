@@ -20,6 +20,13 @@ public static class ConfigurationValidation
         Require(!string.IsNullOrWhiteSpace(storage.Root), "Storage:Root");
         Require(storage.MaxBytes is > 0 and <= 1073741824, "Storage:MaxBytes");
         Require(storage.RetentionDays is >= 1 and <= 90, "Storage:RetentionDays");
+        ValidateAudit(audit);
+        Require(storage.MaxBytes >= 2L * audit.MaxReportBytes + 65536, "Storage:MaxBytes");
+        if (execution.Mode != "Market") return;
+        ValidateMarket(market);
+    }
+    public static void ValidateAudit(AuditOptions audit)
+    {
         Require(audit.MaxDurationSeconds is >= 1 and <= 300, "Audit:MaxDurationSeconds");
         Require(audit.RequestTimeoutSeconds >= 1 && audit.RequestTimeoutSeconds <= audit.MaxDurationSeconds, "Audit:RequestTimeoutSeconds");
         Require(audit.DnsTimeoutSeconds >= 1 && audit.DnsTimeoutSeconds <= audit.RequestTimeoutSeconds, "Audit:DnsTimeoutSeconds");
@@ -34,8 +41,9 @@ public static class ConfigurationValidation
         Require(audit.MaxReportBytes is >= 1024 and <= 196608, "Audit:MaxReportBytes");
         Require(audit.MaxConcurrentAudits is >= 1 and <= 8, "Audit:MaxConcurrentAudits");
         Require(audit.MaxConcurrentRequestsPerAudit is >= 1 and <= 8, "Audit:MaxConcurrentRequestsPerAudit");
-        Require(storage.MaxBytes >= 2L * audit.MaxReportBytes + 65536, "Storage:MaxBytes");
-        if (execution.Mode != "Market") return;
+    }
+    private static void ValidateMarket(MarketOptions market)
+    {
         Require(market.AgentApiToken.StartsWith("aat_", StringComparison.Ordinal) && market.AgentApiToken.Length is > 4 and <= 4096 &&
             !market.AgentApiToken.Any(c => c <= 32 || c >= 127), "Market:AgentApiToken");
         Require(market.RequestTimeoutSeconds is >= 1 and <= 60, "Market:RequestTimeoutSeconds");

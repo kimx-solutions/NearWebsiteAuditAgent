@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../NearWebsiteAuditAgent.Contracts/NearWebsiteAuditAgent.Contracts.csproj" />
+    <ProjectReference Include="../NearWebsiteAuditAgent.Core/NearWebsiteAuditAgent.Core.csproj" />
+    <ProjectReference Include="../NearWebsiteAuditAgent.Infrastructure/NearWebsiteAuditAgent.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
